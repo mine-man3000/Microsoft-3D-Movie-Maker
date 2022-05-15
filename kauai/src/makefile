@@ -1,6 +1,6 @@
 #---kauai.mak
 
-!IFNDEF MAKEFILE_KAUAI
+ifndef MAKEFILE_KAUAI
 MAKEFILE_KAUAI = 1
 
 !INCLUDE $(KAUAI_ROOT)\makefile.def

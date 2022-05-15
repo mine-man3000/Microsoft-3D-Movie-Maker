@@ -1,6 +1,6 @@
 #---$(SOC_ROOT)\tools\makefile
 
-!IFNDEF MAKEFILE_SOC_TOOLS
+ifndef MAKEFILE_SOC_TOOLS
 MAKEFILE_SOC_TOOLS = 1
 
 !INCLUDE $(KAUAI_ROOT)\makefile.def

@@ -1,6 +1,6 @@
 #---$(SOC_ROOT)\src\help\makefile
 
-!IFNDEF MAKEFILE_HELP
+ifndef MAKEFILE_HELP
 MAKEFILE_HELP = 1
 
 !INCLUDE $(KAUAI_ROOT)\makefile.def

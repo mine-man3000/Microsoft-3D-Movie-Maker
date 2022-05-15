@@ -2,7 +2,7 @@
 #
 # Builds Ched, Chelp, and Chomp
 
-!IFNDEF MAKEFILE_KAUAI_TOOLS
+ifndef MAKEFILE_KAUAI_TOOLS
 MAKEFILE_KAUAI_TOOLS = 1
 
 !INCLUDE $(KAUAI_ROOT)\makefile.def

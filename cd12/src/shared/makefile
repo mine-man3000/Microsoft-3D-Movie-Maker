@@ -1,6 +1,6 @@
 #---shared.mak
 
-!IFNDEF MAKEFILE_SHARED
+ifndef MAKEFILE_SHARED
 MAKEFILE_SHARED = 1
 
 !INCLUDE $(KAUAI_ROOT)\makefile.def

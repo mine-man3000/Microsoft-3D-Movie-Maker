@@ -1,6 +1,6 @@
 #---building.mak
 
-!IFNDEF MAKEFILE_BUILDING
+ifndef MAKEFILE_BUILDING
 MAKEFILE_BUILDING = 1
 
 !INCLUDE $(KAUAI_ROOT)\makefile.def

@@ -6,22 +6,22 @@ endif
 
 #- Map some variables ----------------------------------------------------------
 
-ifneq ($(TYPE),"DAY")
+ifeq ($(TYPE),"DAY")
 TYPE=DEBUG
 INCREMENTAL=1
 endif
 
-ifneq ($(TYPE),"HOME")
+ifeq ($(TYPE),"HOME")
 TYPE=DEBUG
 INCREMENTAL=
 endif
 
-ifneq ($(TYPE),"DBSHIP")
+ifeq ($(TYPE),"DBSHIP")
 TYPE=SHIP
 DEBUG_LINK=1
 endif
 
-ifneq ($(LOCAL_BUILD),"1")
+ifeq ($(LOCAL_BUILD),"1")
 DEBUG_LINK=1
 endif
 
@@ -65,7 +65,7 @@ endif
 CPPFLAGS = /c /YX /W3 /Gz /Gy
 
 ASMFLAGS = -c
-ifneq ($(BROWSE),"")
+ifeq ($(BROWSE),"")
 CPPFLAGS = /Fr $(CPPFLAGS)
 endif
 
@@ -78,11 +78,11 @@ ifeq ($(TYPE),"DEBUG")
 # /Fd renames the pdb file from the default "msvc.pdb"
 # /Og enables global optimization
 # /Ob1 enables inline expansion
+endif
 DEFS = $(DEFS) /D"DEBUG"
 ifeq ($(ARCH),"MAC")
 CPPFLAGS = /Q68m $(CPPFLAGS)
 ASMFLAGS = $(ASMFLAGS) -s
-endif
 CPPFLAGS = /Gf /Ge $(CPPFLAGS)
 else
 #CPPFLAGS = /Ogityb1 /Gs /Gf $(CPPFLAGS) REVIEW shonk: revert to this
@@ -107,13 +107,13 @@ LFLAGS_LIB = $(LFLAGS_BASE)
 endif
 
 
-!IF "$(ARCH)" == "WIN"
+ifeq ($(ARCH),"WIN")
 LFLAGS_CONS = $(LFLAGS_CONS) /SUBSYSTEM:console kernel32.lib comdlg32.lib\
     user32.lib gdi32.lib winmm.lib
 LFLAGS_GUI = $(LFLAGS_GUI) $(LFLAGS_PROF) /SUBSYSTEM:windows,4.0 kernel32.lib\
     comdlg32.lib user32.lib gdi32.lib winmm.lib advapi32.lib uuid.lib
 endif
-!IF "$(ARCH)" == "MAC"
+ifeq ($(ARCH),"MAC")
 LFLAGS_GUI = $(LFLAGS_GUI) /MACHINE:M68K
 endif
 
@@ -125,7 +125,12 @@ endif
 #LFLAGS_GUI = /DEBUG $(LFLAGS_GUI)
 #endif
 
-!IF ("$(TYPE)" == "DEBUG") || ("$(DEBUG_LINK)" == "1")
+ifeq ($(TYPE),"DEBUG")
+LFLAGS_CONS = /DEBUG $(LFLAGS_CONS)
+LFLAGS_GUI = /DEBUG $(LFLAGS_GUI)
+endif   # DEBUG || DEBUG_LINK
+
+ifeq ($(DEBUG_LINK),"1")
 LFLAGS_CONS = /DEBUG $(LFLAGS_CONS)
 LFLAGS_GUI = /DEBUG $(LFLAGS_GUI)
 endif   # DEBUG || DEBUG_LINK
@@ -135,47 +140,40 @@ endif   # DEBUG || DEBUG_LINK
 #-Build-Macros---------------------------------------------------------------------
 
 
-!IF "$(ARCH)" == "WIN"
-
-!IF "$(TYPE)" == "DEBUG"
-
-!IF "$(UNICODE)"==""
-BLD_TYPE_DIR = wind
-else
-BLD_TYPE_DIR = winud
+ifeq ($(ARCH),"WIN")
+    ifeq ($(TYPE),"DEBUG")
+        ifeq ($(UNICODE),"")
+            BLD_TYPE_DIR = wind
+        else
+            BLD_TYPE_DIR = winud
+        endif
+    endif
+    ifeq ($(TYPE),"SHIP")
+        ifeq ($(UNICODE),"")
+            BLD_TYPE_DIR = wins
+        else
+            BLD_TYPE_DIR = winus
+        endif
+    endif
 endif
-
-else IF "$(TYPE)" == "SHIP"
-
-!IF "$(UNICODE)"==""
-BLD_TYPE_DIR = wins
-else
-BLD_TYPE_DIR = winus
+ifeq ($(ARCH),"MAC")
+    ifeq ($(TYPE),"DEBUG")
+        BLD_TYPE_DIR = macd
+    endif
+    ifeq ($(TYPE),"SHIP")
+        BLD_TYPE_DIR = macs
+    endif
 endif
-
-endif
-
-else IF "$(ARCH)" == "MAC"
-
-!IF "$(TYPE)" == "DEBUG"
-BLD_TYPE_DIR = macd
-else IF "$(TYPE)" == "SHIP"
-BLD_TYPE_DIR = macs
-endif
-
-endif
-
-
 
 #AUDIO LIB
-!IF "$(ARCH)" == "WIN"
-!IF "$(TYPE)" == "DEBUG"
-AUDIO_LIB = $(KAUAI_ROOT)\elib\$(BLD_TYPE_DIR)\audiod.lib
-else IF "$(TYPE)" == "SHIP"
-AUDIO_LIB = $(KAUAI_ROOT)\elib\$(BLD_TYPE_DIR)\audios.lib
+ifeq ($(ARCH),"WIN")
+    ifeq ($(TYPE),"DEBUG")
+        AUDIO_LIB = $(KAUAI_ROOT)\elib\$(BLD_TYPE_DIR)\audiod.lib
+    endif
+    ifeq ($(TYPE),"SHIP")
+        AUDIO_LIB = $(KAUAI_ROOT)\elib\$(BLD_TYPE_DIR)\audios.lib
+    endif
 endif
-endif
-
 
 #VIDEO FOR WINDOWS LIB
 VFW32_LIB = $(MSVCNT_ROOT)\lib\vfw32.lib
@@ -197,25 +195,20 @@ KAUAI_OBJ_DIR = $(KAUAI_OBJ_ROOT_DIR)\$(BLD_TYPE_DIR)
 #Base: Base files required for all Kauai based projects
 #Requires: nothing
 
-!IF "$(ARCH)" == "WIN"
-
-BASE_PLATFORM_SPECIFIC =\
-    $(KAUAI_OBJ_DIR)\memwin.obj
-
-else IF "$(ARCH)" == "MAC"
-
-BASE_PLATFORM_SPECIFIC =\
-    $(KAUAI_OBJ_DIR)\memmac.obj
-
-!IF "$(CHIP)" == "MC_68020"
-
-BASE_CHIP_SPECIFIC =\
-    $(KAUAI_OBJ_DIR)\utilmc.obj
-
+ifeq ($(ARCH),"WIN")
+    BASE_PLATFORM_SPECIFIC =\
+        $(KAUAI_OBJ_DIR)\memwin.obj
 endif
 
+ifeq ($(ARCH),"MAC")
+    BASE_PLATFORM_SPECIFIC =\
+        $(KAUAI_OBJ_DIR)\memmac.obj
 endif
 
+ifeq ($(CHIP),"MC_68020")
+    BASE_CHIP_SPECIFIC =\
+        $(KAUAI_OBJ_DIR)\utilmc.obj
+endif
 
 BASE_OBJS =\
     $(KAUAI_OBJ_DIR)\utilglob.obj\
@@ -246,20 +239,18 @@ GROUP_OBJS =\
 #File: File and chunky file stuff
 #Requires: Group
 
-!IF "$(ARCH)" == "WIN"
+ifeq ($(ARCH),"WIN")
 
 FILE_PLATFORM_SPECIFIC =\
     $(KAUAI_OBJ_DIR)\filewin.obj\
     $(KAUAI_OBJ_DIR)\fniwin.obj
-
-else IF "$(ARCH)" == "MAC"
-
-FILE_PLATFORM_SPECIFIC =\
-    $(KAUAI_OBJ_DIR)\filemac.obj\
-    $(KAUAI_OBJ_DIR)\fnimac.obj
-
 endif
 
+ifeq ($(ARCH),"MAC")
+    FILE_PLATFORM_SPECIFIC =\
+        $(KAUAI_OBJ_DIR)\filemac.obj\
+        $(KAUAI_OBJ_DIR)\fnimac.obj
+endif
 
 FILE_OBJS =\
     $(KAUAI_OBJ_DIR)\chunk.obj\
@@ -396,24 +387,21 @@ SPELL_OBJS =\
 #Gui: Support for a GUI application
 #Requires: Group, MbmpIO, Sound or NoSound, Video or NoVideo
 
-!IF "$(ARCH)" == "WIN"
-
-GUI_PLATFORM_SPECIFIC =\
-    $(KAUAI_OBJ_DIR)\appbwin.obj\
-    $(KAUAI_OBJ_DIR)\gfxwin.obj\
-    $(KAUAI_OBJ_DIR)\gobwin.obj\
-    $(KAUAI_OBJ_DIR)\menuwin.obj\
-    $(KAUAI_OBJ_DIR)\picwin.obj
-
-else IF "$(ARCH)" == "MAC"
-
-GUI_PLATFORM_SPECIFIC =\
-    $(KAUAI_OBJ_DIR)\appbmac.obj\
-    $(KAUAI_OBJ_DIR)\gfxmac.obj\
-    $(KAUAI_OBJ_DIR)\gobmac.obj\
-    $(KAUAI_OBJ_DIR)\menumac.obj\
-    $(KAUAI_OBJ_DIR)\picmac.obj
-
+ifeq ($(ARCH),"WIN")
+    GUI_PLATFORM_SPECIFIC =\
+        $(KAUAI_OBJ_DIR)\appbwin.obj\
+        $(KAUAI_OBJ_DIR)\gfxwin.obj\
+        $(KAUAI_OBJ_DIR)\gobwin.obj\
+        $(KAUAI_OBJ_DIR)\menuwin.obj\
+        $(KAUAI_OBJ_DIR)\picwin.obj
+endif
+ifeq ($(ARCH),"MAC")
+    GUI_PLATFORM_SPECIFIC =\
+        $(KAUAI_OBJ_DIR)\appbmac.obj\
+        $(KAUAI_OBJ_DIR)\gfxmac.obj\
+        $(KAUAI_OBJ_DIR)\gobmac.obj\
+        $(KAUAI_OBJ_DIR)\menumac.obj\
+        $(KAUAI_OBJ_DIR)\picmac.obj
 endif
 
 
@@ -435,18 +423,18 @@ GUI_OBJS =\
 #Dlg: Dialog support
 #Requires: Gui
 
-!IF "$(ARCH)" == "WIN"
+ifeq ($(ARCH),"WIN")
 
-DLG_PLATFORM_SPECIFIC =\
-    $(KAUAI_OBJ_DIR)\dlgwin.obj\
-
-else IF "$(ARCH)" == "MAC"
-
-DLG_PLATFORM_SPECIFIC =\
-    $(KAUAI_OBJ_DIR)\dlgmac.obj\
-
+    DLG_PLATFORM_SPECIFIC =\
+        $(KAUAI_OBJ_DIR)\dlgwin.obj
 endif
 
+ifeq ($(ARCH),"MAC")
+
+    DLG_PLATFORM_SPECIFIC =\
+        $(KAUAI_OBJ_DIR)\dlgmac.obj
+
+endif
 
 DLG_OBJS =\
     $(KAUAI_OBJ_DIR)\dlg.obj\
@@ -561,5 +549,3 @@ CHELP_OBJS =\
 CHOMP_OBJS =\
     $(KAUAI_OBJ_DIR)\chomp.obj\
     $(KAUAI_OBJ_DIR)\mssio.obj
-
-endif  # !MAKEFILE_DEF

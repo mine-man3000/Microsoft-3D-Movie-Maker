@@ -1,6 +1,6 @@
 #---studio.mak
 
-!IFNDEF MAKEFILE_STUDIO
+ifndef MAKEFILE_STUDIO
 MAKEFILE_STUDIO = 1
 
 !INCLUDE $(KAUAI_ROOT)\makefile.def

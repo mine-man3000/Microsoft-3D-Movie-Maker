@@ -1,6 +1,6 @@
 #---bren.mak
 
-!IFNDEF MAKEFILE_BREN
+ifndef MAKEFILE_BREN
 MAKEFILE_BREN = 1
 
 !INCLUDE $(KAUAI_ROOT)\makefile.def

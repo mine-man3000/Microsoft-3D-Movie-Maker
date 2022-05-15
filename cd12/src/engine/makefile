@@ -1,6 +1,6 @@
 #---engine.mak
 
-!IFNDEF MAKEFILE_ENGINE
+ifndef MAKEFILE_ENGINE
 MAKEFILE_ENGINE = 1
 
 !INCLUDE $(KAUAI_ROOT)\makefile.def
